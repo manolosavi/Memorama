@@ -11,6 +11,7 @@
 #include <GLUT/GLUT.h>
 #include <vector>
 #include "math.h"
+#include <math.h>
 using namespace std;
 
 #pragma mark - global vars
@@ -134,7 +135,7 @@ void display() {
 		draw3dString(GLUT_STROKE_ROMAN, msg, 10, 450, 0.3);
 			break;
 		case paused:
-		sprintf(msg, "Credits: Luis Lamadrid [A0] & Manuel Sanudo [A01192241]");
+		sprintf(msg, "Credits: Luis Lamadrid [A01191158] & Manuel Sanudo [A01192241]");
 		draw3dString(GLUT_STROKE_ROMAN, msg, 20, 300, 0.15);
 		sprintf(msg, "I - iniciar, P - pausa, R - reiniciar, esc - salir");
 		draw3dString(GLUT_STROKE_ROMAN, msg, 20, 260, 0.15);
@@ -158,7 +159,15 @@ void reset() {
 		correct[i] = false;
 	}
 	
-//	randomize order[]
+    // randomize order
+    int tmp, randIndex;
+    for (int i = 0; i < 16; i++) {
+        randIndex = random() % (int) 16;
+        tmp = order[i];
+        order[i] = order[randIndex];
+        order[randIndex] = tmp;
+    }
+    turns = 0; // turn reset
 }
 
 void keyboard(unsigned char keyPressed, int mouseX, int mouseY) {
