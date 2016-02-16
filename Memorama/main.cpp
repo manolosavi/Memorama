@@ -12,6 +12,7 @@
 #include <vector>
 #include "math.h"
 #include <math.h>
+#include <string>
 using namespace std;
 
 #pragma mark - global vars
@@ -86,6 +87,13 @@ void drawNumber(int i, int position) {
 	draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[i], position*50+10, 30, 0.3);
 }
 
+void drawSolution() {
+    glColor3f(0.7, 0.7, 0.7);
+    for (int i = 0; i < 16; i++) {
+        draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[order[i]], i*50+10, 120, 0.3);
+    }
+}
+
 void paintCards() {
 	int w = screenWidth/16;
 	for (int i=0; i<16; i+=2) {
@@ -116,6 +124,7 @@ void display() {
 	}
 	
 	paintCards();
+    drawSolution();
 	
 	for (int i=0; i<16; i++) {
 		if (correct[i]) {
