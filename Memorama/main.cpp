@@ -101,7 +101,7 @@ void drawSolution() {
 void paintCards() {
 	int w = screenWidth/16;
 	for (int i=0; i<16; i+=2) {
-        if (highlighted[i]){
+        if (highlighted[i] && !correct[i]){
             glColor3ub(100, 128, 194);
         } else {
             glColor3ub(4, 24, 36);
@@ -110,7 +110,7 @@ void paintCards() {
 	}
 	
 	for (int i=1; i<16; i+=2) {
-        if (highlighted[i]) {
+        if (highlighted[i] && !correct[i]) {
             glColor3ub(100, 128, 194);
         } else {
             glColor3ub(8, 50, 76);
