@@ -30,7 +30,7 @@ bool highlighted[16] = {false};
 bool drawSolutionSwitch = false;
 int lastHighlightedCardIndex = -1;
 
-int timerTotal = 0, screenWidth = 800, screenHeight = 500, turns = 0;
+int timerTotal = 0, screenWidth = 800, screenHeight = 500, turns = 0, newWidth, newHeight;
 
 #pragma mark - aux
 
@@ -198,6 +198,7 @@ void reset() {
         order[randIndex] = tmp;
     }
     turns = 0; // turn reset
+    highlighted[lastHighlightedCardIndex] = false;
 }
 
 void keyboard(unsigned char keyPressed, int mouseX, int mouseY) {
@@ -230,7 +231,10 @@ void keyboard(unsigned char keyPressed, int mouseX, int mouseY) {
 }
 
 bool click(int x, int y) {
-	if (y <= screenHeight/5) {
+    printf("X: %d, Y: %d\n", x, y);
+    x = x * 800 / newWidth;
+    y = y * 500 / newHeight;
+	if (y <= 100) {
 		int card = cardForX(x);
 		if (!correct[card] && card != selected[1]) {
 			selected[0] = 1+(selected[0])%2;
@@ -242,7 +246,8 @@ bool click(int x, int y) {
 }
 
 void onMouseMotion(int x, int y) {
-    // printf("X: %d, Y: %d\n", x, y);
+    x = x * 800 / newWidth;
+    y = y * 500 / newHeight;
     if (y >= 400 && y <= 500 && state == playing){ // to be changed to variable
         highlighted[lastHighlightedCardIndex] = false;
         lastHighlightedCardIndex = cardForX(x);
@@ -256,7 +261,7 @@ void mouse(int button, int buttonState, int x, int y) {
 	if (state != playing) {
 		return;
 	}
-	y = screenHeight-y;
+	y = newHeight-y;
 	if (buttonState == GLUT_DOWN) {
 		if (button == GLUT_LEFT_BUTTON) {
 			if (click(x, y)) {
@@ -278,9 +283,9 @@ void mouse(int button, int buttonState, int x, int y) {
 	}
 }
 
-void reshape(int newWidth,int newHeight) {
-//	screenWidth = newWidth;
-//	screenHeight = newHeight;
+void reshape(int newWidth2,int newHeight2) {
+	newWidth = newWidth2;
+	newHeight = newHeight2;
 	glViewport(0, 0, newWidth, newHeight);
     
 	glMatrixMode(GL_PROJECTION);
