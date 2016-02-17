@@ -33,7 +33,8 @@ int timerTotal = 0, screenWidth = 800, screenHeight = 500, turns = 0;
 #pragma mark - aux
 
 int cardForX(int x) {
-	return (x/50)%50;
+	int width = screenWidth/16;
+	return (x/width)%width;
 }
 
 void draw3dString (void *font, char *str, float x, float y, float scale) {
@@ -86,7 +87,9 @@ void timer(int i) {
 
 void drawNumber(int i, int position) {
 	glColor3f(1, 1, 1);
-	draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[i], position*50+10, 30, 0.3);
+	int x = position*(screenWidth/16);
+	int y = 0.3*screenHeight;
+	draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[i], x+(x/5), y, 0.3);
 }
 
 void drawSolution() {
@@ -98,19 +101,20 @@ void drawSolution() {
 
 void paintCards() {
 	int w = screenWidth/16;
+	cout << w << endl;
 	for (int i=0; i<16; i+=2) {
 		glColor3ub(4, 24, 36);
-		glRectd(i*w, 0, (i+1)*w, 100);
+		glRectd(i*w, 0, (i+1)*w, screenHeight/5);
 	}
 	
 	for (int i=1; i<16; i+=2) {
 		glColor3ub(8, 50, 76);
-		glRectd(i*w, 0, (i+1)*w, 100);
+		glRectd(i*w, 0, (i+1)*w, screenHeight/5);
 	}
 	
 	for (int i=1; i<=selected[0]; i++) {
 		glColor3ub(20, 128, 194);
-		glRectd(selected[i]*w, 0, (selected[i]+1)*w, 100);
+		glRectd(selected[i]*w, 0, (selected[i]+1)*w, screenHeight/5);
 	}
 }
 
@@ -119,7 +123,7 @@ void display() {
 	
 //	Timer
 	glColor3f(1, 1, 1);
-	glRasterPos2i(740, 470);
+	glRasterPos2i(screenWidth*0.925, screenHeight*0.94);
 	vector<GLubyte> time = formatTime();
 	for(vector<GLubyte>::iterator it = time.begin(); it < time.end(); it++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *it);
@@ -148,8 +152,8 @@ void display() {
 	case playing:
 		sprintf(msg, "Turnos: %i", turns/2);
 		draw3dString(GLUT_STROKE_ROMAN, msg, 10, 450, 0.3);
-			break;
-		case paused:
+		break;
+	case paused:
 		sprintf(msg, "Credits: Luis Lamadrid [A01191158] & Manuel Sanudo [A01192241]");
 		draw3dString(GLUT_STROKE_ROMAN, msg, 20, 300, 0.15);
 		sprintf(msg, "I - iniciar, P - pausa, R - reiniciar, esc - salir");
@@ -214,7 +218,7 @@ void keyboard(unsigned char keyPressed, int mouseX, int mouseY) {
 }
 
 bool click(int x, int y) {
-	if (y <= 100) {
+	if (y <= screenHeight/5) {
 		int card = cardForX(x);
 		if (!correct[card] && card != selected[1]) {
 			selected[0] = 1+(selected[0])%2;
@@ -251,6 +255,16 @@ void mouse(int button, int buttonState, int x, int y) {
 	}
 }
 
+void reshape(int newWidth,int newHeight) {
+	screenWidth = newWidth;
+	screenHeight = newHeight;
+	glViewport(0, 0, screenWidth, screenHeight);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, screenWidth, 0, screenHeight);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
 int main(int argc, char *argv[]) {
 	reset();
 	
@@ -264,6 +278,7 @@ int main(int argc, char *argv[]) {
 	glLoadIdentity();
 	gluOrtho2D(0, screenWidth, 0, screenHeight);
 	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
 	glutTimerFunc(33,timer,1);
