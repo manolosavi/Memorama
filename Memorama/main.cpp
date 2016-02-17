@@ -188,14 +188,16 @@ void reset() {
 void keyboard(unsigned char keyPressed, int mouseX, int mouseY) {
 	switch (keyPressed) {
 		case 'i': case 'I':
-			if (state != playing) {
+			if (state == paused) {
 				state = playing;
 				timer(0);
 			}
 			break;
 		case 'p': case 'P':
-			state = paused;
-			display();
+			if (state == playing) {
+				state = paused;
+				display();
+			}
 			break;
 		case 'r': case 'R':
 			reset();
