@@ -26,6 +26,8 @@ int correctPairs = 0;
 int selected[3] = {0, -1, -1};
 int order[16] = {1, 3, 5, 4, 2, 6, 7, 0, 4, 3, 1, 2, 0, 5, 7, 6};
 
+bool drawSolutionSwitch = false;
+
 int timerTotal = 0, screenWidth = 800, screenHeight = 500, turns = 0;
 
 #pragma mark - aux
@@ -124,8 +126,12 @@ void display() {
 	}
 	
 	paintCards();
-    drawSolution();
-	
+    
+    // drawing solution
+    if (drawSolutionSwitch) {
+        drawSolution();
+    }
+    
 	for (int i=0; i<16; i++) {
 		if (correct[i]) {
 			drawNumber(order[i], i);
@@ -163,7 +169,7 @@ void reset() {
 	timerTotal = 0;
 	correctPairs = 0;
 	selected[0] = 0;
-	
+    drawSolutionSwitch = false;
 	for (int i=0; i<16; i++) {
 		correct[i] = false;
 	}
@@ -195,6 +201,9 @@ void keyboard(unsigned char keyPressed, int mouseX, int mouseY) {
 			reset();
 			display();
 			break;
+        case 'a': case 'A':
+            drawSolutionSwitch = !drawSolutionSwitch;
+            break;
 		case 27:// Escape key
 			exit(0);
 		default:
