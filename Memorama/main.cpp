@@ -25,8 +25,10 @@ bool correct[16] = {false};
 int correctPairs = 0;
 int selected[3] = {0, -1, -1};
 int order[16] = {1, 3, 5, 4, 2, 6, 7, 0, 4, 3, 1, 2, 0, 5, 7, 6};
+bool highlighted[16] = {false};
 
 bool drawSolutionSwitch = false;
+int lastHighlightedCardIndex = -1;
 
 int timerTotal = 0, screenWidth = 800, screenHeight = 500, turns = 0;
 
@@ -103,13 +105,22 @@ void paintCards() {
 	int w = screenWidth/16;
 	cout << w << endl;
 	for (int i=0; i<16; i+=2) {
-		glColor3ub(4, 24, 36);
-		glRectd(i*w, 0, (i+1)*w, screenHeight/5);
+        if (highlighted[i] && !correct[i]){
+            glColor3ub(100, 128, 194);
+        } else {
+            glColor3ub(4, 24, 36);
+        }
+		glRectd(i*w, 0, (i+1)*w, 100);
 	}
 	
 	for (int i=1; i<16; i+=2) {
-		glColor3ub(8, 50, 76);
-		glRectd(i*w, 0, (i+1)*w, screenHeight/5);
+        if (highlighted[i] && !correct[i]) {
+            glColor3ub(100, 128, 194);
+        } else {
+            glColor3ub(8, 50, 76);
+        }
+		
+		glRectd(i*w, 0, (i+1)*w, 100);
 	}
 	
 	for (int i=1; i<=selected[0]; i++) {
@@ -229,6 +240,17 @@ bool click(int x, int y) {
 	return false;
 }
 
+void onMouseMotion(int x, int y) {
+    // printf("X: %d, Y: %d\n", x, y);
+    if (y >= 405){ // to be changed to variable
+        highlighted[lastHighlightedCardIndex] = false;
+        lastHighlightedCardIndex = cardForX(x);
+        highlighted[lastHighlightedCardIndex] = true;
+    } else {
+        highlighted[lastHighlightedCardIndex] = false;
+    }
+}
+
 void mouse(int button, int buttonState, int x, int y) {
 	if (state != playing) {
 		return;
@@ -281,6 +303,7 @@ int main(int argc, char *argv[]) {
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
+    glutPassiveMotionFunc( onMouseMotion );
 	glutTimerFunc(33,timer,1);
 	glutMainLoop();
 	return 0;
