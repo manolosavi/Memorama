@@ -90,27 +90,27 @@ void timer(int i) {
 void drawNumber(int i, int position) {
 	glColor3f(1, 1, 1);
 	int x = position*(screenWidth/16);
-	int y = 0.3*screenHeight;
-	draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[i], x+(x/5), y, 0.3);
+	int y = 0.06*screenHeight;
+	draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[i], x+((screenWidth/16)/5), y, 0.3);
 }
 
 void drawSolution() {
     glColor3f(0.7, 0.7, 0.7);
     for (int i = 0; i < 16; i++) {
-        draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[order[i]], i*50+10, 120, 0.3);
+        draw3dString(GLUT_STROKE_MONO_ROMAN, numbers[order[i]], i*(screenWidth/16)+(screenWidth/16 / 5), screenHeight * 0.15, 0.1);
     }
 }
 
 void paintCards() {
 	int w = screenWidth/16;
-	cout << w << endl;
+	// cout << w << endl;
 	for (int i=0; i<16; i+=2) {
         if (highlighted[i] && !correct[i]){
             glColor3ub(100, 128, 194);
         } else {
             glColor3ub(4, 24, 36);
         }
-		glRectd(i*w, 0, (i+1)*w, 100);
+		glRectd(i*w, 0, (i+1)*w, screenHeight/5);
 	}
 	
 	for (int i=1; i<16; i+=2) {
@@ -120,7 +120,7 @@ void paintCards() {
             glColor3ub(8, 50, 76);
         }
 		
-		glRectd(i*w, 0, (i+1)*w, 100);
+		glRectd(i*w, 0, (i+1)*w, screenHeight/5);
 	}
 	
 	for (int i=1; i<=selected[0]; i++) {
@@ -211,15 +211,16 @@ void keyboard(unsigned char keyPressed, int mouseX, int mouseY) {
 		case 'p': case 'P':
 			if (state == playing) {
 				state = paused;
-				display();
+				glutPostRedisplay();
 			}
 			break;
 		case 'r': case 'R':
 			reset();
-			display();
+			glutPostRedisplay();
 			break;
         case 'a': case 'A':
             drawSolutionSwitch = !drawSolutionSwitch;
+            glutPostRedisplay();
             break;
 		case 27:// Escape key
 			exit(0);
@@ -242,7 +243,7 @@ bool click(int x, int y) {
 
 void onMouseMotion(int x, int y) {
     // printf("X: %d, Y: %d\n", x, y);
-    if (y >= 405){ // to be changed to variable
+    if (y >= 400 && y <= 500 && state == playing){ // to be changed to variable
         highlighted[lastHighlightedCardIndex] = false;
         lastHighlightedCardIndex = cardForX(x);
         highlighted[lastHighlightedCardIndex] = true;
@@ -268,7 +269,7 @@ void mouse(int button, int buttonState, int x, int y) {
 						if (correctPairs == 8) {
 							state = finished;
 							selected[0] = 0;
-							display();
+							glutPostRedisplay();
 						}
 					}
 				}
@@ -278,12 +279,14 @@ void mouse(int button, int buttonState, int x, int y) {
 }
 
 void reshape(int newWidth,int newHeight) {
-	screenWidth = newWidth;
-	screenHeight = newHeight;
-	glViewport(0, 0, screenWidth, screenHeight);
+//	screenWidth = newWidth;
+//	screenHeight = newHeight;
+	glViewport(0, 0, newWidth, newHeight);
+    
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0, screenWidth, 0, screenHeight);
+    gluOrtho2D(0, 800, 0, 500);
+	
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -298,7 +301,9 @@ int main(int argc, char *argv[]) {
 	glClearColor(0.12, 0.34, 0.56, 1);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+    
 	gluOrtho2D(0, screenWidth, 0, screenHeight);
+    
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
